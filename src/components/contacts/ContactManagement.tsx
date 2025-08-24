@@ -18,6 +18,7 @@ import {
   Trash2,
   Edit
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Contact {
   contactid: string;
@@ -51,6 +52,8 @@ export const ContactManagement = () => {
   const [newContactName, setNewContactName] = useState("");
   const [newContactEmail, setNewContactEmail] = useState("");
   const [newContactPhone, setNewContactPhone] = useState("");
+  const [selectedAssetId, setSelectedAssetId] = useState("");
+  const [assets, setAssets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadContacts = async () => {
@@ -74,8 +77,24 @@ export const ContactManagement = () => {
     }
   };
 
+  const loadAssets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("asset")
+        .select("assetid, name")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+      setAssets(data || []);
+    } catch (error) {
+      console.error("Error loading assets:", error);
+      setAssets([]);
+    }
+  };
+
   useEffect(() => {
     loadContacts();
+    loadAssets();
   }, []);
 
   const handleCreateContact = async () => {
@@ -84,11 +103,16 @@ export const ContactManagement = () => {
       return;
     }
 
+    if (!selectedAssetId) {
+      toast.error("Please select an asset");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from("contact")
         .insert({
-          assetid: crypto.randomUUID(), // You might want to select from existing assets
+          assetid: selectedAssetId,
           name: newContactName.trim(),
           email: newContactEmail.trim() || null,
           phone: newContactPhone.trim() || null,
@@ -101,6 +125,7 @@ export const ContactManagement = () => {
       setNewContactName("");
       setNewContactEmail("");
       setNewContactPhone("");
+      setSelectedAssetId("");
       setShowCreateForm(false);
       loadContacts();
     } catch (error) {
@@ -207,6 +232,21 @@ export const ContactManagement = () => {
                 value={newContactPhone}
                 onChange={(e) => setNewContactPhone(e.target.value)}
               />
+              <div>
+                <label className="block text-sm font-medium mb-2">Select Asset</label>
+                <Select value={selectedAssetId} onValueChange={setSelectedAssetId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose an asset..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assets.map((asset) => (
+                      <SelectItem key={asset.assetid} value={asset.assetid}>
+                        {asset.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <Button onClick={handleCreateContact}>Create Contact</Button>
             </div>
           </CardContent>

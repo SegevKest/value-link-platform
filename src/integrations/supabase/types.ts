@@ -19,24 +19,18 @@ export type Database = {
           activecontractid: string | null
           assetid: string
           name: string
-          propertyownerid: string | null
-          tenantid: string | null
           type: string
         }
         Insert: {
           activecontractid?: string | null
           assetid: string
           name: string
-          propertyownerid?: string | null
-          tenantid?: string | null
           type: string
         }
         Update: {
           activecontractid?: string | null
           assetid?: string
           name?: string
-          propertyownerid?: string | null
-          tenantid?: string | null
           type?: string
         }
         Relationships: [
@@ -46,20 +40,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "contract"
             referencedColumns: ["contractid"]
-          },
-          {
-            foreignKeyName: "fk_asset_propertyowner"
-            columns: ["propertyownerid"]
-            isOneToOne: false
-            referencedRelation: "propertyowner"
-            referencedColumns: ["propertyownerid"]
-          },
-          {
-            foreignKeyName: "fk_asset_tenant"
-            columns: ["tenantid"]
-            isOneToOne: false
-            referencedRelation: "tenant"
-            referencedColumns: ["tenantid"]
           },
           {
             foreignKeyName: "fk_asset_type"
@@ -76,7 +56,7 @@ export type Database = {
           name: string
         }
         Insert: {
-          assetsmanagerid: string
+          assetsmanagerid?: string
           name: string
         }
         Update: {
@@ -278,7 +258,7 @@ export type Database = {
         }
         Insert: {
           name: string
-          propertyownerid: string
+          propertyownerid?: string
         }
         Update: {
           name?: string
