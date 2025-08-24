@@ -45,7 +45,7 @@ export const AssetManagement = () => {
     const loadAssets = async () => {
       const { data, error } = await supabase
         .from("asset")
-        .select("assetid, name, type, tenantid, propertyownerid, activecontractid")
+        .select("assetid, name, type, activecontractid")
         .order("name", { ascending: true });
       
       if (error) {
