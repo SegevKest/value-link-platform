@@ -1,10 +1,13 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { AssetCreation } from "./AssetCreation";
 import { 
   Plus, 
   Search, 
@@ -23,48 +26,38 @@ const assetTypes = [
   { id: "equipment", label: "Equipment", icon: Laptop, count: 1079 },
 ];
 
-const sampleAssets = [
-  {
-    id: 1,
-    name: "Downtown Office Complex",
-    type: "Real Estate",
-    value: "$2,500,000",
-    status: "Active",
-    location: "New York, NY",
-    lastUpdated: "2024-01-15",
-    contact: "John Smith",
-    nextPayment: "$15,000",
-    paymentDue: "2024-02-01"
-  },
-  {
-    id: 2,
-    name: "Fleet Vehicle #247",
-    type: "Vehicle",
-    value: "$45,000",
-    status: "Maintenance",
-    location: "Los Angeles, CA",
-    lastUpdated: "2024-01-14",
-    contact: "Sarah Johnson",
-    nextPayment: "$850",
-    paymentDue: "2024-01-28"
-  },
-  {
-    id: 3,
-    name: "Server Infrastructure",
-    type: "Equipment",
-    value: "$125,000",
-    status: "Active",
-    location: "Data Center A",
-    lastUpdated: "2024-01-13",
-    contact: "Mike Wilson",
-    nextPayment: "$5,200",
-    paymentDue: "2024-02-15"
-  },
-];
+interface Asset {
+  assetid: string;
+  name: string;
+  type: string;
+  tenantid?: string | null;
+  propertyownerid?: string | null;
+  activecontractid?: string | null;
+}
 
 export const AssetManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [assets, setAssets] = useState<Asset[]>([]);
+
+  useEffect(() => {
+    const loadAssets = async () => {
+      const { data, error } = await supabase
+        .from("asset")
+        .select("assetid, name, type, tenantid, propertyownerid, activecontractid")
+        .order("name", { ascending: true });
+      
+      if (error) {
+        toast.error("Failed to load assets");
+        console.error("Error loading assets:", error);
+      } else {
+        setAssets(data || []);
+      }
+    };
+
+    loadAssets();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -87,11 +80,14 @@ export const AssetManagement = () => {
           <h1 className="text-3xl font-bold text-gray-900">Asset Management</h1>
           <p className="text-gray-600 mt-1">Manage and track all your assets in one place.</p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={() => setShowCreateForm(!showCreateForm)}>
           <Plus className="h-4 w-4" />
-          Add Asset
+          {showCreateForm ? "Cancel" : "Add Asset"}
         </Button>
       </div>
+
+      {/* Asset Creation Form */}
+      {showCreateForm && <AssetCreation />}
 
       {/* Asset Type Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -131,8 +127,11 @@ export const AssetManagement = () => {
         {assetTypes.map((type) => (
           <TabsContent key={type.id} value={type.id} className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sampleAssets.map((asset) => (
-                <Card key={asset.id} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+              {assets
+                .filter(asset => type.id === "all" || asset.type.toLowerCase().includes(type.id.replace("-", " ")))
+                .filter(asset => asset.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map((asset) => (
+                <Card key={asset.assetid} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div>
@@ -145,48 +144,48 @@ export const AssetManagement = () => {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Badge className={getStatusColor(asset.status)}>
-                      {asset.status}
+                    <Badge className={asset.activecontractid ? "bg-green-100 text-green-700 border-green-200" : "bg-gray-100 text-gray-700 border-gray-200"}>
+                      {asset.activecontractid ? "Active Contract" : "Available"}
                     </Badge>
                   </CardHeader>
                   
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-500">Asset Value</p>
-                        <p className="font-semibold text-gray-900">{asset.value}</p>
+                        <p className="text-gray-500">Asset ID</p>
+                        <p className="font-semibold text-gray-900 truncate">{asset.assetid.substring(0, 8)}...</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Location</p>
-                        <p className="font-medium text-gray-900">{asset.location}</p>
+                        <p className="text-gray-500">Type</p>
+                        <p className="font-medium text-gray-900">{asset.type}</p>
                       </div>
                     </div>
 
-                    <div className="border-t pt-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <div>
-                          <p className="text-gray-500">Contact</p>
-                          <p className="font-medium text-gray-900">{asset.contact}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-gray-500">Next Payment</p>
-                          <p className="font-semibold text-blue-600">{asset.nextPayment}</p>
-                          <p className="text-xs text-gray-500">Due: {asset.paymentDue}</p>
+                    {asset.tenantid && (
+                      <div className="border-t pt-4">
+                        <div className="text-sm">
+                          <p className="text-gray-500">Tenant ID</p>
+                          <p className="font-medium text-gray-900 truncate">{asset.tenantid.substring(0, 8)}...</p>
                         </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="flex gap-2 pt-2">
                       <Button variant="outline" size="sm" className="flex-1">
                         View Details
                       </Button>
                       <Button size="sm" className="flex-1">
-                        Edit Asset
+                        Create Contract
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               ))}
+              {assets.length === 0 && (
+                <div className="col-span-full text-center py-8 text-gray-500">
+                  No assets found. Create your first asset to get started.
+                </div>
+              )}
             </div>
           </TabsContent>
         ))}
