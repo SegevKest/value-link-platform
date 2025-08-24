@@ -19,10 +19,11 @@ import {
   MoreHorizontal
 } from "lucide-react";
 
+// Sample asset types for visual reference  
 const assetTypes = [
-    { id: "all", label: "All Assets", icon: Package, count: 0 },
-    { id: "store", label: "Real Estate", icon: Building, count: 0 },
-    { id: "apartment", label: "Equipment", icon: Laptop, count: 0 },
+    { id: "all", label: "All Assets", icon: Package },
+    { id: "real", label: "Real Estate", icon: Building },
+    { id: "equipment", label: "Equipment", icon: Laptop },
 ];
 
 interface Asset {
@@ -50,8 +51,25 @@ export const AssetManagement = () => {
       if (error) {
         toast.error("Failed to load assets");
         console.error("Error loading assets:", error);
+        // Set sample asset for visual reference on error
+        setAssets([{
+          assetid: "sample-1",
+          name: "Sample Property",
+          type: "Real Estate",
+          tenantid: null,
+          propertyownerid: null,
+          activecontractid: null
+        }]);
       } else {
-        setAssets(data || []);
+        // If no assets, show sample for visual reference
+        setAssets(data && data.length > 0 ? data : [{
+          assetid: "sample-1", 
+          name: "Sample Property",
+          type: "Real Estate",
+          tenantid: null,
+          propertyownerid: null,
+          activecontractid: null
+        }]);
       }
     };
 
@@ -91,15 +109,17 @@ export const AssetManagement = () => {
       {/* Asset Type Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between">
-          <TabsList className="grid w-full max-w-md grid-cols-4">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
             {assetTypes.map((type) => {
               const Icon = type.icon;
+              const count = type.id === "all" ? assets.length : 
+                          assets.filter(asset => asset.type.toLowerCase().includes(type.id)).length;
               return (
                 <TabsTrigger key={type.id} value={type.id} className="gap-2">
                   <Icon className="h-4 w-4" />
                   <span className="hidden sm:inline">{type.label}</span>
                   <Badge variant="secondary" className="ml-1 hidden md:inline">
-                    {type.count}
+                    {count}
                   </Badge>
                 </TabsTrigger>
               );
@@ -127,7 +147,7 @@ export const AssetManagement = () => {
           <TabsContent key={type.id} value={type.id} className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {assets
-                .filter(asset => type.id === "all" || asset.type.toLowerCase().includes(type.id.replace("-", " ")))
+                .filter(asset => type.id === "all" || asset.type.toLowerCase().includes(type.id))
                 .filter(asset => asset.name.toLowerCase().includes(searchTerm.toLowerCase()))
                 .map((asset) => (
                 <Card key={asset.assetid} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1">

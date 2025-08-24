@@ -9,7 +9,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  FileSignature
+  FileSignature,
+  Building
 } from "lucide-react";
 import type { NavigationItem } from "@/pages/Index";
 
@@ -35,6 +36,11 @@ const navigationItems = [
     id: "contacts" as NavigationItem,
     label: "Contacts",
     icon: Users,
+  },
+  {
+    id: "propertyowners" as NavigationItem,
+    label: "Property Owners",
+    icon: Building,
   },
   {
     id: "payments" as NavigationItem,

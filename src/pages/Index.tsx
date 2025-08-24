@@ -5,6 +5,7 @@ import { TopBar } from "@/components/layout/TopBar";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { AssetManagement } from "@/components/assets/AssetManagement";
 import { ContactManagement } from "@/components/contacts/ContactManagement";
+import { PropertyOwnerManagement } from "@/components/propertyowners/PropertyOwnerManagement";
 import { PaymentTracking } from "@/components/payments/PaymentTracking";
 import { Settings } from "@/components/settings/Settings";
 import { ContractCreation } from "@/components/contracts/ContractCreation";
@@ -14,6 +15,7 @@ export type NavigationItem =
   | "dashboard" 
   | "assets" 
   | "contacts" 
+  | "propertyowners"
   | "payments" 
   | "contracts"
   | "settings";
@@ -30,6 +32,8 @@ const Index = () => {
         return <AssetManagement />;
       case "contacts":
         return <ContactManagement />;
+      case "propertyowners":
+        return <PropertyOwnerManagement />;
       case "payments":
         return <PaymentTracking />;
       case "contracts":
