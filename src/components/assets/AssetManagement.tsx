@@ -19,7 +19,11 @@ import {
   MoreHorizontal
 } from "lucide-react";
 
-const assetTypes = [];
+const assetTypes = [
+    { id: "all", label: "All Assets", icon: Package, count: 0 },
+    { id: "store", label: "Real Estate", icon: Building, count: 0 },
+    { id: "apartment", label: "Equipment", icon: Laptop, count: 0 },
+];
 
 interface Asset {
   assetid: string;
