@@ -8,7 +8,8 @@ import {
   CreditCard, 
   Settings,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileSignature
 } from "lucide-react";
 import type { NavigationItem } from "@/pages/Index";
 
@@ -39,6 +40,11 @@ const navigationItems = [
     id: "payments" as NavigationItem,
     label: "Payments",
     icon: CreditCard,
+  },
+  {
+    id: "contracts" as NavigationItem,
+    label: "Contracts",
+    icon: FileSignature,
   },
   {
     id: "settings" as NavigationItem,

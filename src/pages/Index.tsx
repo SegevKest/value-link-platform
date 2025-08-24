@@ -7,12 +7,15 @@ import { AssetManagement } from "@/components/assets/AssetManagement";
 import { ContactManagement } from "@/components/contacts/ContactManagement";
 import { PaymentTracking } from "@/components/payments/PaymentTracking";
 import { Settings } from "@/components/settings/Settings";
+import { ContractCreation } from "@/components/contracts/ContractCreation";
+
 
 export type NavigationItem = 
   | "dashboard" 
   | "assets" 
   | "contacts" 
   | "payments" 
+  | "contracts"
   | "settings";
 
 const Index = () => {
@@ -29,6 +32,8 @@ const Index = () => {
         return <ContactManagement />;
       case "payments":
         return <PaymentTracking />;
+      case "contracts":
+        return <ContractCreation />;
       case "settings":
         return <Settings />;
       default:

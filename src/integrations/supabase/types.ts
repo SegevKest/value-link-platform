@@ -217,6 +217,50 @@ export type Database = {
           },
         ]
       }
+      contract_terms: {
+        Row: {
+          base_rent: number
+          contract_id: string
+          created_at: string
+          date_to_charge: string
+          end_date: string
+          follow_index: number
+          id: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          base_rent: number
+          contract_id: string
+          created_at?: string
+          date_to_charge: string
+          end_date: string
+          follow_index?: number
+          id?: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          base_rent?: number
+          contract_id?: string
+          created_at?: string
+          date_to_charge?: string
+          end_date?: string
+          follow_index?: number
+          id?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_terms_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contract"
+            referencedColumns: ["contractid"]
+          },
+        ]
+      }
       propertyowner: {
         Row: {
           name: string

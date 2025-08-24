@@ -24,6 +24,8 @@ import {
   Search
 } from "lucide-react";
 
+const sb = supabase as any;
+
 interface AssetType {
   id: string;
   name: string;
@@ -79,7 +81,7 @@ export const Settings = () => {
   const fetchData = async () => {
     try {
       // Fetch assets with asset types
-      const { data: assetsData, error: assetsError } = await supabase
+      const { data: assetsData, error: assetsError } = await sb
         .from('assets')
         .select(`
           *,
@@ -90,7 +92,7 @@ export const Settings = () => {
       setAssets(assetsData || []);
 
       // Fetch asset types
-      const { data: typesData, error: typesError } = await supabase
+      const { data: typesData, error: typesError } = await sb
         .from('asset_types')
         .select('*');
 
@@ -98,7 +100,7 @@ export const Settings = () => {
       setAssetTypes(typesData || []);
 
       // Fetch bank accounts
-      const { data: bankData, error: bankError } = await supabase
+      const { data: bankData, error: bankError } = await sb
         .from('bank_accounts')
         .select('*');
 
@@ -106,7 +108,7 @@ export const Settings = () => {
       setBankAccounts(bankData || []);
 
       // Fetch asset bank account relationships
-      const { data: linkData, error: linkError } = await supabase
+      const { data: linkData, error: linkError } = await sb
         .from('asset_bank_accounts')
         .select(`
           *,
@@ -130,7 +132,7 @@ export const Settings = () => {
     if (!selectedAsset) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('assets')
         .update({
           name: assetData.name,
@@ -168,7 +170,7 @@ export const Settings = () => {
     if (!selectedAsset) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await sb
         .from('asset_bank_accounts')
         .insert({
           asset_id: selectedAsset.id,
