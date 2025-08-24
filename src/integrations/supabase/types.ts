@@ -163,6 +163,7 @@ export type Database = {
         Row: {
           assetid: string
           contractid: string
+          contracttermsid: string | null
           created_at: string
           end_date: string | null
           is_active: boolean | null
@@ -174,6 +175,7 @@ export type Database = {
         Insert: {
           assetid: string
           contractid?: string
+          contracttermsid?: string | null
           created_at?: string
           end_date?: string | null
           is_active?: boolean | null
@@ -185,6 +187,7 @@ export type Database = {
         Update: {
           assetid?: string
           contractid?: string
+          contracttermsid?: string | null
           created_at?: string
           end_date?: string | null
           is_active?: boolean | null
@@ -200,6 +203,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "asset"
             referencedColumns: ["assetid"]
+          },
+          {
+            foreignKeyName: "contract_contracttermsid_fkey"
+            columns: ["contracttermsid"]
+            isOneToOne: false
+            referencedRelation: "contract_terms"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "contract_propertyownerid_fkey"
