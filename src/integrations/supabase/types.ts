@@ -7,150 +7,262 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.4"
+  }
   public: {
     Tables: {
-      asset_bank_accounts: {
+      asset: {
         Row: {
-          asset_id: string
-          bank_account_id: string
-          created_at: string
-          id: string
-          is_primary: boolean | null
+          activecontractid: string | null
+          assetid: string
+          name: string
+          propertyownerid: string | null
+          tenantid: string | null
+          type: string
         }
         Insert: {
-          asset_id: string
-          bank_account_id: string
-          created_at?: string
-          id?: string
-          is_primary?: boolean | null
+          activecontractid?: string | null
+          assetid: string
+          name: string
+          propertyownerid?: string | null
+          tenantid?: string | null
+          type: string
         }
         Update: {
-          asset_id?: string
-          bank_account_id?: string
-          created_at?: string
-          id?: string
-          is_primary?: boolean | null
+          activecontractid?: string | null
+          assetid?: string
+          name?: string
+          propertyownerid?: string | null
+          tenantid?: string | null
+          type?: string
         }
         Relationships: [
           {
-            foreignKeyName: "asset_bank_accounts_asset_id_fkey"
-            columns: ["asset_id"]
+            foreignKeyName: "asset_activecontractid_fkey"
+            columns: ["activecontractid"]
             isOneToOne: false
-            referencedRelation: "assets"
-            referencedColumns: ["id"]
+            referencedRelation: "contract"
+            referencedColumns: ["contractid"]
           },
           {
-            foreignKeyName: "asset_bank_accounts_bank_account_id_fkey"
-            columns: ["bank_account_id"]
+            foreignKeyName: "fk_asset_propertyowner"
+            columns: ["propertyownerid"]
             isOneToOne: false
-            referencedRelation: "bank_accounts"
-            referencedColumns: ["id"]
+            referencedRelation: "propertyowner"
+            referencedColumns: ["propertyownerid"]
+          },
+          {
+            foreignKeyName: "fk_asset_tenant"
+            columns: ["tenantid"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["tenantid"]
+          },
+          {
+            foreignKeyName: "fk_asset_type"
+            columns: ["type"]
+            isOneToOne: false
+            referencedRelation: "assettype"
+            referencedColumns: ["name"]
           },
         ]
       }
-      asset_types: {
+      assetsmanager: {
         Row: {
-          created_at: string
-          description: string | null
-          id: string
+          assetsmanagerid: string
           name: string
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
+          assetsmanagerid: string
           name: string
         }
         Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
+          assetsmanagerid?: string
           name?: string
         }
         Relationships: []
       }
-      assets: {
+      assettype: {
         Row: {
-          asset_type_id: string
-          contact_email: string | null
-          contact_name: string | null
-          contact_phone: string | null
-          created_at: string
-          description: string | null
-          id: string
-          location: string | null
+          assettypeid: number
           name: string
-          status: string
+        }
+        Insert: {
+          assettypeid?: number
+          name: string
+        }
+        Update: {
+          assettypeid?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      category: {
+        Row: {
+          categoryid: string
+          name: string
+        }
+        Insert: {
+          categoryid: string
+          name: string
+        }
+        Update: {
+          categoryid?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      contact: {
+        Row: {
+          assetid: string
+          contact_type: string | null
+          contactid: string
+          created_at: string
+          email: string | null
+          name: string
+          notes: string | null
+          phone: string | null
           updated_at: string
-          value: number | null
         }
         Insert: {
-          asset_type_id: string
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
+          assetid: string
+          contact_type?: string | null
+          contactid?: string
           created_at?: string
-          description?: string | null
-          id?: string
-          location?: string | null
+          email?: string | null
           name: string
-          status?: string
+          notes?: string | null
+          phone?: string | null
           updated_at?: string
-          value?: number | null
         }
         Update: {
-          asset_type_id?: string
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
+          assetid?: string
+          contact_type?: string | null
+          contactid?: string
           created_at?: string
-          description?: string | null
-          id?: string
-          location?: string | null
+          email?: string | null
           name?: string
-          status?: string
+          notes?: string | null
+          phone?: string | null
           updated_at?: string
-          value?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "assets_asset_type_id_fkey"
-            columns: ["asset_type_id"]
+            foreignKeyName: "contact_assetid_fkey"
+            columns: ["assetid"]
             isOneToOne: false
-            referencedRelation: "asset_types"
-            referencedColumns: ["id"]
+            referencedRelation: "asset"
+            referencedColumns: ["assetid"]
           },
         ]
       }
-      bank_accounts: {
+      contract: {
         Row: {
-          account_name: string
-          account_number: string
-          account_type: string
-          bank_name: string
+          assetid: string
+          contractid: string
           created_at: string
-          id: string
-          routing_number: string | null
+          end_date: string | null
+          is_active: boolean | null
+          propertyownerid: string
+          start_date: string | null
+          tenantid: string
+          updated_at: string
         }
         Insert: {
-          account_name: string
-          account_number: string
-          account_type?: string
-          bank_name: string
+          assetid: string
+          contractid?: string
           created_at?: string
-          id?: string
-          routing_number?: string | null
+          end_date?: string | null
+          is_active?: boolean | null
+          propertyownerid: string
+          start_date?: string | null
+          tenantid: string
+          updated_at?: string
         }
         Update: {
-          account_name?: string
-          account_number?: string
-          account_type?: string
-          bank_name?: string
+          assetid?: string
+          contractid?: string
           created_at?: string
-          id?: string
-          routing_number?: string | null
+          end_date?: string | null
+          is_active?: boolean | null
+          propertyownerid?: string
+          start_date?: string | null
+          tenantid?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_assetid_fkey"
+            columns: ["assetid"]
+            isOneToOne: false
+            referencedRelation: "asset"
+            referencedColumns: ["assetid"]
+          },
+          {
+            foreignKeyName: "contract_propertyownerid_fkey"
+            columns: ["propertyownerid"]
+            isOneToOne: false
+            referencedRelation: "propertyowner"
+            referencedColumns: ["propertyownerid"]
+          },
+          {
+            foreignKeyName: "contract_tenantid_fkey"
+            columns: ["tenantid"]
+            isOneToOne: false
+            referencedRelation: "tenant"
+            referencedColumns: ["tenantid"]
+          },
+        ]
+      }
+      propertyowner: {
+        Row: {
+          name: string
+          propertyownerid: string
+        }
+        Insert: {
+          name: string
+          propertyownerid: string
+        }
+        Update: {
+          name?: string
+          propertyownerid?: string
         }
         Relationships: []
+      }
+      tenant: {
+        Row: {
+          assetid: string | null
+          email: string | null
+          name: string
+          phone: string | null
+          tenantid: string
+        }
+        Insert: {
+          assetid?: string | null
+          email?: string | null
+          name: string
+          phone?: string | null
+          tenantid: string
+        }
+        Update: {
+          assetid?: string | null
+          email?: string | null
+          name?: string
+          phone?: string | null
+          tenantid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_tenant_asset"
+            columns: ["assetid"]
+            isOneToOne: false
+            referencedRelation: "asset"
+            referencedColumns: ["assetid"]
+          },
+        ]
       }
     }
     Views: {
@@ -168,21 +280,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -200,14 +316,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -223,14 +341,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -246,14 +366,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -261,14 +383,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
