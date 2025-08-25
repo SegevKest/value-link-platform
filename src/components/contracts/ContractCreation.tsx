@@ -10,6 +10,16 @@ import { toast } from "sonner";
 interface Asset { assetid: string; name: string }
 interface Owner { propertyownerid: string; name: string }
 interface Tenant { tenantid: string; name: string; email?: string | null; phone?: string | null }
+interface ContractRow {
+  contractid: string;
+  assetid: string;
+  tenantid: string;
+  propertyownerid: string;
+  start_date: string | null;
+  end_date: string | null;
+  is_active: boolean | null;
+  created_at: string;
+}
 
 export const ContractCreation = () => {
   // Selections and toggles
@@ -35,31 +45,39 @@ export const ContractCreation = () => {
   const [dateToCharge, setDateToCharge] = useState("");
   const [baseRent, setBaseRent] = useState("0");
 
-  const isFormValid = useMemo(() => {
-    if (!assetId) return false;
-    if (createNewOwner) {
-      if (!ownerName.trim()) return false;
-    } else if (!ownerId) return false;
+// Contracts list state
+const [contracts, setContracts] = useState<ContractRow[]>([]);
 
-    if (createNewTenant) {
-      if (!tenantName.trim()) return false;
-    } else if (!tenantId) return false;
+const isFormValid = useMemo(() => {
+  if (!assetId) return false;
+  if (createNewOwner) {
+    if (!ownerName.trim()) return false;
+  } else if (!ownerId) return false;
 
-    return !!startDate && !!endDate && !!dateToCharge && !!baseRent;
-  }, [assetId, createNewOwner, ownerId, ownerName, createNewTenant, tenantId, tenantName, startDate, endDate, dateToCharge, baseRent]);
+  if (createNewTenant) {
+    if (!tenantName.trim()) return false;
+  } else if (!tenantId) return false;
+
+  return !!startDate && !!endDate && !!dateToCharge && !!baseRent;
+}, [assetId, createNewOwner, ownerId, ownerName, createNewTenant, tenantId, tenantName, startDate, endDate, dateToCharge, baseRent]);
 
   useEffect(() => {
-    const load = async () => {
-      const [{ data: a }, { data: o }, { data: t }] = await Promise.all([
-        supabase.from("asset").select("assetid,name").order("name", { ascending: true }),
-        supabase.from("propertyowner").select("propertyownerid,name").order("name", { ascending: true }),
-        supabase.from("tenant").select("tenantid,name,email,phone").order("name", { ascending: true }),
-      ]);
-      setAssets(a || []);
-      setOwners(o || []);
-      setTenants(t || []);
-    };
-    load();
+const load = async () => {
+  const [aRes, oRes, tRes, cRes] = await Promise.all([
+    supabase.from("asset").select("assetid,name").order("name", { ascending: true }),
+    supabase.from("propertyowner").select("propertyownerid,name").order("name", { ascending: true }),
+    supabase.from("tenant").select("tenantid,name,email,phone").order("name", { ascending: true }),
+    supabase
+      .from("contract")
+      .select("contractid,assetid,tenantid,propertyownerid,start_date,end_date,is_active,created_at")
+      .order("created_at", { ascending: false }),
+  ]);
+  setAssets(aRes.data || []);
+  setOwners(oRes.data || []);
+  setTenants(tRes.data || []);
+  setContracts((cRes.data as ContractRow[]) || []);
+};
+load();
   }, []);
 
   const handleCreateWorkflow = async () => {
@@ -132,16 +150,12 @@ export const ContractCreation = () => {
         });
       if (termsErr) throw new Error(`Contract terms creation failed: ${termsErr.message}`);
 
-      // Update Asset with relevant info
-      const { error: assetErr } = await supabase
-        .from("asset")
-        .update({
-          tenantid: ensuredTenantId,
-          propertyownerid: ensuredOwnerId,
-          activecontractid: contractRow.contractid,
-        })
-        .eq("assetid", assetId);
-      if (assetErr) throw new Error(`Asset update failed: ${assetErr.message}`);
+// Refresh contracts list
+const { data: latestContracts } = await supabase
+  .from("contract")
+  .select("contractid,assetid,tenantid,propertyownerid,start_date,end_date,is_active,created_at")
+  .order("created_at", { ascending: false });
+setContracts((latestContracts as ContractRow[]) || []);
 
       toast.success("Contract created successfully", { id: "create-contract" });
 
@@ -258,6 +272,40 @@ export const ContractCreation = () => {
             <div className="flex justify-end">
               <Button onClick={handleCreateWorkflow} disabled={!isFormValid}>Create Contract</Button>
             </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Active Contracts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {contracts.filter((c) => c.is_active).length === 0 ? (
+              <p className="text-sm text-muted-foreground">No active contracts yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {contracts
+                  .filter((c) => c.is_active)
+                  .map((c) => {
+                    const assetName = assets.find((a) => a.assetid === c.assetid)?.name || "—";
+                    const ownerName = owners.find((o) => o.propertyownerid === c.propertyownerid)?.name || "—";
+                    const tenantName = tenants.find((t) => t.tenantid === c.tenantid)?.name || "—";
+                    return (
+                      <div key={c.contractid} className="flex items-center justify-between border rounded-md p-3">
+                        <div>
+                          <p className="font-medium">{assetName}</p>
+                          <p className="text-xs text-muted-foreground">Owner: {ownerName} • Tenant: {tenantName}</p>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {(c.start_date as string) || "—"} → {(c.end_date as string) || "—"}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>
