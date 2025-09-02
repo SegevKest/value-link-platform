@@ -20,18 +20,21 @@ export type Database = {
           assetid: string
           name: string
           type: string
+          user_id: string | null
         }
         Insert: {
           activecontractid?: string | null
           assetid: string
           name: string
           type: string
+          user_id?: string | null
         }
         Update: {
           activecontractid?: string | null
           assetid?: string
           name?: string
           type?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -106,6 +109,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           assetid: string
@@ -117,6 +121,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           assetid?: string
@@ -128,6 +133,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -151,6 +157,7 @@ export type Database = {
           start_date: string | null
           tenantid: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           assetid: string
@@ -163,6 +170,7 @@ export type Database = {
           start_date?: string | null
           tenantid: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           assetid?: string
@@ -175,6 +183,7 @@ export type Database = {
           start_date?: string | null
           tenantid?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -218,6 +227,7 @@ export type Database = {
           id: string
           start_date: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           base_rent: number
@@ -229,6 +239,7 @@ export type Database = {
           id?: string
           start_date: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           base_rent?: number
@@ -240,6 +251,7 @@ export type Database = {
           id?: string
           start_date?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -251,18 +263,45 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       propertyowner: {
         Row: {
           name: string
           propertyownerid: string
+          user_id: string | null
         }
         Insert: {
           name: string
           propertyownerid?: string
+          user_id?: string | null
         }
         Update: {
           name?: string
           propertyownerid?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -273,6 +312,7 @@ export type Database = {
           name: string
           phone: string | null
           tenantid: string
+          user_id: string | null
         }
         Insert: {
           assetid?: string | null
@@ -280,6 +320,7 @@ export type Database = {
           name: string
           phone?: string | null
           tenantid: string
+          user_id?: string | null
         }
         Update: {
           assetid?: string | null
@@ -287,6 +328,7 @@ export type Database = {
           name?: string
           phone?: string | null
           tenantid?: string
+          user_id?: string | null
         }
         Relationships: [
           {
