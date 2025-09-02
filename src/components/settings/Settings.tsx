@@ -80,43 +80,33 @@ export const Settings = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch assets with asset types
+      // Fetch assets from 'asset' table and map to expected shape
       const { data: assetsData, error: assetsError } = await sb
-        .from('assets')
-        .select(`
-          *,
-          asset_types (*)
-        `);
+        .from('asset')
+        .select('assetid, name, type, activecontractid')
+        .order('name', { ascending: true });
 
       if (assetsError) throw assetsError;
-      setAssets(assetsData || []);
 
-      // Fetch asset types
-      const { data: typesData, error: typesError } = await sb
-        .from('asset_types')
-        .select('*');
+      const mappedAssets = (assetsData || []).map((a: any) => ({
+        id: a.assetid,
+        name: a.name,
+        asset_types: { name: a.type } as any,
+        value: null,
+        status: 'active',
+        location: '',
+        description: '',
+        contact_name: '',
+        contact_email: '',
+        contact_phone: '',
+      }));
 
-      if (typesError) throw typesError;
-      setAssetTypes(typesData || []);
+      setAssets(mappedAssets);
 
-      // Fetch bank accounts
-      const { data: bankData, error: bankError } = await sb
-        .from('bank_accounts')
-        .select('*');
-
-      if (bankError) throw bankError;
-      setBankAccounts(bankData || []);
-
-      // Fetch asset bank account relationships
-      const { data: linkData, error: linkError } = await sb
-        .from('asset_bank_accounts')
-        .select(`
-          *,
-          bank_accounts (*)
-        `);
-
-      if (linkError) throw linkError;
-      setAssetBankAccounts(linkData || []);
+      // Initialize other datasets as empty since related tables are not present in the schema
+      setAssetTypes([]);
+      setBankAccounts([]);
+      setAssetBankAccounts([]);
 
     } catch (error) {
       console.error('Error fetching data:', error);
