@@ -150,6 +150,13 @@ load();
         });
       if (termsErr) throw new Error(`Contract terms creation failed: ${termsErr.message}`);
 
+      // Update Asset status to "Rented" by setting the active contract ID
+      const { error: assetUpdateErr } = await supabase
+        .from("asset")
+        .update({ activecontractid: contractRow.contractid })
+        .eq("assetid", assetId);
+      if (assetUpdateErr) throw new Error(`Asset status update failed: ${assetUpdateErr.message}`);
+
 // Refresh contracts list
 const { data: latestContracts } = await supabase
   .from("contract")
