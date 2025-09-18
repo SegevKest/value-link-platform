@@ -11,6 +11,7 @@ import { PropertyOwnerManagement } from "@/components/propertyowners/PropertyOwn
 import { PaymentTracking } from "@/components/payments/PaymentTracking";
 import { Settings } from "@/components/settings/Settings";
 import { ContractCreation } from "@/components/contracts/ContractCreation";
+import { ContractManagement } from "@/components/contracts/ContractManagement";
 
 
 export type NavigationItem = 
@@ -20,6 +21,7 @@ export type NavigationItem =
   | "propertyowners"
   | "payments" 
   | "contracts"
+  | "contract-management"
   | "settings";
 
 const Index = () => {
@@ -60,6 +62,8 @@ const Index = () => {
         return <PaymentTracking />;
       case "contracts":
         return <ContractCreation />;
+      case "contract-management":
+        return <ContractManagement />;
       case "settings":
         return <Settings />;
       default:

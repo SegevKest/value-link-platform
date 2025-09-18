@@ -49,7 +49,12 @@ const navigationItems = [
   },
   {
     id: "contracts" as NavigationItem,
-    label: "Contracts",
+    label: "Create Contract",
+    icon: FileSignature,
+  },
+  {
+    id: "contract-management" as NavigationItem,
+    label: "Manage Contracts",
     icon: FileSignature,
   },
   {
