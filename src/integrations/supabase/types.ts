@@ -151,6 +151,7 @@ export type Database = {
           contractid: string
           contracttermsid: string | null
           created_at: string
+          deleted_at: string | null
           end_date: string | null
           is_active: boolean | null
           propertyownerid: string
@@ -164,6 +165,7 @@ export type Database = {
           contractid?: string
           contracttermsid?: string | null
           created_at?: string
+          deleted_at?: string | null
           end_date?: string | null
           is_active?: boolean | null
           propertyownerid: string
@@ -177,6 +179,7 @@ export type Database = {
           contractid?: string
           contracttermsid?: string | null
           created_at?: string
+          deleted_at?: string | null
           end_date?: string | null
           is_active?: boolean | null
           propertyownerid?: string
@@ -345,7 +348,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_deleted_contracts: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
